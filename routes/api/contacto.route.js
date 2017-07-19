@@ -1,12 +1,16 @@
 var express = require('express');
 var contacto = require('../../model/contacto.model');
+var services = require('../../services');
 var routerContacto = express.Router();
-var idUsuario = 1;
 
 //GET CONTACTOS
-routerContacto.get('/contactos/', function(req, res, next) {
-  contacto.selectAll(function(contactos) {
+routerContacto.get('/contactos/', services.verificar,
+  function(req, res, next) {
+  var idUsuario = req.usuario.idUsuario;
+  console.log(idUsuario);
+  contacto.selectAll(idUsuario, function(contactos) {
     if(typeof contactos !== 'undefined') {
+      console.log(contactos);
       res.json(contactos);
     } else {
       res.json({"mensaje" : "No hay contactos"});
@@ -15,9 +19,16 @@ routerContacto.get('/contactos/', function(req, res, next) {
 });
 
 //GET CONTACTO
-routerContacto.get('/contactos/:idContacto', function(req, res, next) {
-  var idContacto = req.params.idContacto;
-  contacto.select(idContacto, function(contactos) {
+routerContacto.get('/contactos/:idContacto', services.verificar,
+ function(req, res, next) {
+  var idContact = req.params.idContacto;
+  var idUser = req.usuario.idUsuario;
+  console.log(idUser);
+  var data = {
+    idContacto: idContact,
+    idUsuario: idUser
+  }
+  contacto.select(data, function(contactos) {
     if(typeof contactos !== 'undefined') {
       res.json(contactos);
     } else {
@@ -27,9 +38,12 @@ routerContacto.get('/contactos/:idContacto', function(req, res, next) {
 });
 
 //POST CONTACTO
-routerContacto.post('/contactos', function(req, res, next) {
+routerContacto.post('/contactos', services.verificar, 
+function(req, res, next) {
+  var idUser = req.usuario.idUsuario;
+  console.log(idUser);
   var data = {
-    idUsuario: idUsuario,
+    idUsuario: idUser,
     nombre : req.body.nombre,
     apellido : req.body.apellido,
     telefono : req.body.telefono,

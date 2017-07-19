@@ -2,23 +2,30 @@ var database = require('../config/database.config');
 var contacto = {};
 
 //SELECCIONAR CONTACTOS
-contacto.selectAll = function(callback) {
+contacto.selectAll = function(idUsuario, callback) {
   if(database) {
-    database.query("SELECT contacto.idContacto as 'idContacto', contacto.nombre as 'nombre', contacto.apellido as 'apellido'," + 
-      "contacto.telefono as 'telefono', contacto.correo as 'correo', categoria.nombre as 'categoriaNombre'" +
-        "from contacto INNER JOIN categoria ON (contacto.idCategoria = categoria.idCategoria)", 
-    function(error, resultados) {
-      if(error) throw error;
-      callback(resultados);
+    var sql = "SELECT contacto.idContacto AS 'idContacto', contacto.nombre AS 'nombre', contacto.apellido AS 'apellido', contacto.correo AS 'correo', contacto.telefono AS 'telefono', categoria.nombre AS 'nombreCategoria' FROM DetalleUsuario INNER JOIN contacto ON (detalleusuario.idContacto = contacto.idContacto) INNER JOIN categoria ON (contacto.idCategoria = categoria.idCategoria) WHERE idUsuario = ?";
+    database.query(sql, idUsuario,
+    function(error, resultado) {
+      if(error) {
+        throw error;
+      } else {
+        callback(resultado);
+        console.log(resultado);
+      }
     });
   }
 }
 
 //SELECCIONAR UN CONTACTO
-contacto.select = function(idContacto, callback) {
+contacto.select = function(data, callback) {
   if(database) {
-    var sql = "SELECT * FROM Contacto WHERE idContacto = ?";
-    database.query(sql, idContacto,
+    var sql = "SELECT contacto.idContacto AS 'idContacto', contacto.nombre AS 'nombre', contacto.apellido AS 'apellido', " +
+      "contacto.correo AS 'correo', contacto.telefono AS 'telefono', categoria.nombre AS 'nombreCategoria' FROM DetalleUsuario " +
+      "INNER JOIN contacto ON (detalleusuario.idContacto = contacto.idContacto) " +
+      "INNER JOIN categoria ON (contacto.idCategoria = categoria.idCategoria) "+
+      "WHERE idUsuario = ? AND contacto.idContacto = ?";
+    database.query(sql, [data.idUsuario, data.idContacto],
     function(error, resultado) {
       if(error) {
         throw error;

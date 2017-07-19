@@ -3,28 +3,21 @@ var jwt = require('jsonwebtoken');
 var usuario = require('../model/usuario.model');
 var router = express.Router();
 
-//AUTENTICAR USUARIOS
 router.post('/auth/', function(req, res) {
 	var data = {
 		nick: req.body.nick,
 		contrasena: req.body.contrasena
 	}
 	usuario.login(data, function(resultado) {
-		if(typeof resultado !== undefined) {
-			var temp = {
-				idUsuario: resultado.idUsuario,
-				nick: resultado.nick,
-				contrasena: resultado.contrasena
-			}
-			console.log(temp);
-			var token = 'Bearer ' + jwt.sign(temp, 'shh');
-			res.setHeader('Authorization', token);
+		if(typeof resultado[0] !== undefined) {
 
-			res.json({
-				estado: true,
-				mensaje: "Se autorizo el acceso",
-				token: token
-			});
+			var token = 'Bearer ' + jwt.sign(resultado[0], 'shh', { expiresIn: '1h' });
+
+			resultado[0].estado = true;
+			resultado[0].mensaje = "Se autorizo el acceso";
+			resultado[0].token = token;
+
+			res.json(resultado[0]);
 		} else {
 			res.json({
 				estado: false,

@@ -31,13 +31,15 @@ usuario.login = function(data, callback) {
   if(database) {
     var sql = "SELECT * FROM Usuario WHERE nick = ? AND contrasena = ?;";
     database.query(sql, [data.nick, data.contrasena],
-    function(error, resultado) {
-      if(error) {
-        throw error;
-      } else {
-        callback(resultado[0]);
-      }
-    });
+    function(error, resultado){
+			if(error) {
+				throw error;
+			} else {
+				console.log(resultado[0]);
+
+				callback(resultado);
+			}
+		});
   }
 }
 
