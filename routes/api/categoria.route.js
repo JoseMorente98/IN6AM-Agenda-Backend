@@ -13,6 +13,18 @@ routerCategorias.get('/categorias/', function(req, res, next) {
   });
 });
 
+routerCategorias.get('/categorias/:idCategoria',
+  function(req, res) {
+    var idCategoria = req.params.idCategoria;
+    categoria.select(idCategoria,
+      function(error, resultados){
+      if(typeof resultados !== undefined) {
+        res.json(resultados);
+      } else {
+        res.json({"Mensaje": "No hay categorias"});
+      }
+  });
+});
 //POST CATEGORIA
 routerCategorias.post('/categorias', function(req, res, next) {
   nombre = req.body.nombre

@@ -2,6 +2,7 @@ var express = require('express');
 var contacto = require('../../model/contacto.model');
 var services = require('../../services');
 var routerContacto = express.Router();
+var historial = require('../../model/historial.model');
 
 //GET CONTACTOS
 routerContacto.get('/contactos/', services.verificar,
@@ -19,18 +20,13 @@ routerContacto.get('/contactos/', services.verificar,
 });
 
 //GET CONTACTO
-routerContacto.get('/contactos/:idContacto', services.verificar,
+routerContacto.get('/contactos/:idContacto',
  function(req, res, next) {
-  var idContact = req.params.idContacto;
-  var idUser = req.usuario.idUsuario;
-  console.log(idUser);
-  var data = {
-    idContacto: idContact,
-    idUsuario: idUser
-  }
-  contacto.select(data, function(contactos) {
-    if(typeof contactos !== 'undefined') {
-      res.json(contactos);
+  var idContacto = req.params.idContacto;
+  contacto.select(idContacto, function(resultado) {
+    if(typeof resultado !== 'undefined') {
+      console.log(resultado);
+      res.json(resultado);
     } else {
       res.json({"mensaje" : "No hay contactos"});
     }
@@ -50,6 +46,7 @@ function(req, res, next) {
     correo : req.body.correo,
     idCategoria : req.body.idCategoria
   };
+
   contacto.insert(data, function(resultado){
     if(resultado && resultado.affectedRows > 0) {
       res.redirect('/api/contactos/');
@@ -60,43 +57,34 @@ function(req, res, next) {
 });
 
 //PUT CONTACTOS
-routerContacto.put('/contacto/:idContacto', function(req, res, next){
-  var idContacto = req.params.idContacto;
+routerContacto.put('/contactos/:idContacto', function(req, res, next){
   var data = {
-    idContacto : req.body.idContacto,
-    nombre : req.body.nombre,
-    apellido : req.body.apellido,
-    telefono : req.body.telefono,
-    correo : req.body.correo,
-    idCategoria : req.body.idCategoria
+    nombre: req.body.nombre,
+    apellido: req.body.apellido,
+    telefono: req.body.telefono,
+    correo: req.body.correo,
+    idCategoria: req.body.idCategoria,
+    idContacto: req.params.idContacto
   }
-  if(idContacto == data.idContacto) {
-    contacto.update(data, function(resultado){
-      if(resultado.length > 0) {
-        res.json(resultado);
-      } else {
-        console.log("NO: " + resultado.length);
-        res.end();
-      }
-    });
-  } else {
-    res.json({"mensaje": "No coinciden los identificadores"});
-  }
+  contacto.update(data, function(resultado){
+    if(typeof resultado !== 'undefined') {
+      res.json(resultado);
+    } else {
+      res.json({"mensaje":"No se pudo actualizar"});
+    }
+  });
 });
 
 //DELETE CONTACTOS
-routerContacto.delete('/contacto/:idContacto', function(req, res, next){
-  var idContactoUri = req.params.idContacto;
-  var idContactoBody = req.body.idContacto;
-  if(idContactoUri == idContactoBody) {
-    contacto.delete(idContactoBody, function(resultado){
+routerContacto.delete('/contactos/:idContacto', function(req, res, next){
+  var idContacto = req.params.idContacto;
+    contacto.delete(idContacto, function(resultado){
       if(resultado && resultado.mensaje ===	"Eliminado") {
         res.json({"mensaje":"Se elimino el contacto correctamente"});
       } else {
         res.json({"mensaje":"Se elimino el contacto"});
       }
     });
-  }
 });
 
 module.exports = routerContacto;

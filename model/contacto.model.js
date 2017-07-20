@@ -18,19 +18,15 @@ contacto.selectAll = function(idUsuario, callback) {
 }
 
 //SELECCIONAR UN CONTACTO
-contacto.select = function(data, callback) {
+contacto.select = function(idContacto, callback) {
   if(database) {
-    var sql = "SELECT contacto.idContacto AS 'idContacto', contacto.nombre AS 'nombre', contacto.apellido AS 'apellido', " +
-      "contacto.correo AS 'correo', contacto.telefono AS 'telefono', categoria.nombre AS 'nombreCategoria' FROM DetalleUsuario " +
-      "INNER JOIN contacto ON (detalleusuario.idContacto = contacto.idContacto) " +
-      "INNER JOIN categoria ON (contacto.idCategoria = categoria.idCategoria) "+
-      "WHERE idUsuario = ? AND contacto.idContacto = ?";
-    database.query(sql, [data.idUsuario, data.idContacto],
+    var sql = "SELECT * FROM Contacto WHERE idContacto = ? LIMIT 1";
+    database.query(sql, idContacto,
     function(error, resultado) {
       if(error) {
         throw error;
       } else {
-        callback(null, resultado);
+        callback(resultado[0]);
       }
     });
   }
@@ -54,14 +50,14 @@ contacto.insert = function(data, callback) {
 //ACTUALIZAR CONTACTO
 contacto.update = function(data, callback) {
   if(database) {
-    var sql = "CALL SP_ActualizarContacto(?, ?, ?, ?, ?, ?)";
+    var sql = "CALL SP_ActualizarContacto(?, ?, ?, ?, ?, ?);";
     database.query(sql,
     [data.nombre, data.apellido, data.telefono, data.correo, data.idCategoria, data.idContacto],
     function(error, resultado) {
       if(error) {
         throw error;
       } else {
-        callback(null, data);
+        callback(null, {"insertId": resultado.insertId});
       }
     });
   }

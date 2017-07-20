@@ -10,6 +10,7 @@ var usuarioRoute = require('./routes/api/usuario.route');
 var categoriaRoute = require('./routes/api/categoria.route');
 var contactoRoute = require('./routes/api/contacto.route');
 var tareaRoute = require('./routes/api/tarea.route');
+var historialRoute = require('./routes/api/historial.route');
 var services = require('./services');
 
 var app = express();
@@ -46,6 +47,7 @@ app.use(uri, usuarioRoute);
 app.use(uri, categoriaRoute);
 app.use(uri, contactoRoute);
 app.use(uri, tareaRoute);
+app.use(uri, historialRoute);
 
 //ERROR 404
 app.use(function(req, res, next) {

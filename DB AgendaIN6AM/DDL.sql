@@ -19,6 +19,8 @@ CREATE TABLE Contacto(
 	correo VARCHAR(50) NOT NULL,
 	idCategoria INT NOT NULL,
 	FOREIGN KEY (idCategoria) REFERENCES Categoria(idCategoria)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
 );
 
 -- CREAR TABLA USUARIO
@@ -33,8 +35,12 @@ CREATE TABLE DetalleUsuario(
 	idDetalleUsuario INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	idUsuario INT NOT NULL,
 	idContacto INT NOT NULL,
-	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE,
 	FOREIGN KEY (idContacto) REFERENCES Contacto(idContacto)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
 );
 
 -- CREAR TABLA TAREA
@@ -44,6 +50,17 @@ CREATE TABLE Tarea(
 	descripcion VARCHAR(255) NOT NULL,
 	fechaEntrega DATETIME NOT NULL,
 	fechaRegistro DATETIME NOT NULL
+);
+
+-- CREAR TABLA HISTORIAL
+CREATE TABLE Historial(
+	idHistorial INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    idUsuario INT NOT NULL,
+	descripcion VARCHAR(255) NOT NULL,
+	fechaRegistro DATETIME NOT NULL,
+	FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
+	ON UPDATE CASCADE
+	ON DELETE CASCADE
 );
 
 -- STORAGE PROCEDURES
@@ -118,5 +135,14 @@ BEGIN
     SET _idContacto = (LAST_INSERT_ID());
 	INSERT INTO DetalleUsuario(idUsuario,idContacto) VALUES (_idUsuario, _idContacto);
 	SELECT * FROM DetalleUsuario;
+END;
+$$
+
+-- Agregar Historial
+DELIMITER $$
+CREATE PROCEDURE SP_AgregarHistorial(IN _idUsuario INT, IN _descripcion VARCHAR(255))
+BEGIN
+	INSERT INTO Historial(idUsuario,descripcion, fechaRegistro) VALUES (_idUsuario, _descripcion, NOW());
+	SELECT * FROM Historial;
 END;
 $$
