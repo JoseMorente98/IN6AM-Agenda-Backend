@@ -215,3 +215,5 @@ BEGIN
 	CALL SP_AgregarHistorial(_idUsuario, _descripcion);
 END;
 $$
+
+CALL SP_AgregarUsuario("admin", "admin");
