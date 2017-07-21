@@ -1,11 +1,19 @@
 var database = require('../config/database.config');
+
 var tarea = {};
 
-tarea.selectAll = function(callback) {
+//SELECCIONAR TAREAS PROPIAS DEL USUARIO
+tarea.selectAll = function(idUsuario, callback) {
   if(database) {
-    database.query('SELECT * FROM Tarea', function(error, resultados) {
-      if(error) throw error;
-      callback(resultados);
+    var sql = "SELECT * FROM Tarea WHERE idUsuario = ?;";
+    database.query(sql, idUsuario,
+    function(error, resultados) {
+      if(error) {
+        throw error;
+      } else {
+        callback(resultados);
+        console.log(resultados);
+      }
     });
   }
 }
@@ -13,13 +21,13 @@ tarea.selectAll = function(callback) {
 //SELECCIONAR UNA TAREA
 tarea.select = function(idTarea, callback) {
   if(database) {
-    var sql = "SELECT * FROM Tarea WHERE idTarea = ?";
+    var sql = "SELECT * FROM Tarea WHERE idTarea = ? LIMIT 1";
     database.query(sql, idTarea,
     function(error, resultado) {
       if(error) {
         throw error;
       } else {
-        callback(null, resultado);
+        callback(resultado[0]);
       }
     });
   }
@@ -28,8 +36,8 @@ tarea.select = function(idTarea, callback) {
 //AGREGAR TAREA
 tarea.insert = function(data, callback) {
   if(database) {
-    database.query("CALL SP_AgregarTarea(?, ?, ?)", 
-    [data.nombre, data.descripcion, data.fechaEntrega],
+    database.query("CALL SP_AgregarTarea(?, ?, ?, ?);", 
+    [data.idUsuario, data.nombre, data.descripcion, data.fechaEntrega],
     function(error, resultado) {
       if(error) {
         throw error;
@@ -43,9 +51,9 @@ tarea.insert = function(data, callback) {
 //ACTUALIZAR TAREA
 tarea.update = function(data, callback) {
   if(database) {
-    var sql = "CALL SP_ActualizarTarea(?, ?, ?, ?)";
+    var sql = "CALL SP_ActualizarTarea(?, ?, ?, ?, ?);";
     database.query(sql,
-    [data.nombre, data.descripcion, data.fechaEntrega, data.idTarea],
+    [data.idUsuario, data.nombre, data.descripcion, data.fechaEntrega, data.idTarea],
     function(error, resultado) {
       if(error) {
         throw error;
@@ -57,10 +65,10 @@ tarea.update = function(data, callback) {
 }
 
 //ELIMINAR TAREA
-tarea.delete = function(idTarea, callback) {
+tarea.delete = function(data, callback) {
   if(database) {
-    var sql = "CALL SP_EliminarTarea(?)";
-    database.query(sql, idTarea,
+    var sql = "CALL SP_EliminarTarea(?, ?);";
+    database.query(sql, [data.idUsuario, data.idTarea],
     function(error, resultado) {
       if(error) {
         throw error;

@@ -1,12 +1,17 @@
 var express = require('express');
 var usuario = require('../../model/usuario.model');
 var usuarioRouter = express.Router();
+var services = require('../../services');
 
 //GET USUARIOS
-usuarioRouter.get('/usuarios', function(req, res) {
-  usuario.selectAll(function(resultado) {
-    if(typeof resultado !== undefined) {
-      res.json(resultado);
+usuarioRouter.get('/usuarios/', services.verificar,
+  function(req, res, next) {
+  var idUsuario = req.usuario.idUsuario;
+  console.log(idUsuario);
+  usuario.selectAll(idUsuario, function(usuarios) {
+    if(typeof usuarios !== 'undefined') {
+      console.log(usuarios);
+      res.json(usuarios);
     } else {
       res.json({"mensaje" : "No hay usuarios"});
     }

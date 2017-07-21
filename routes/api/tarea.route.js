@@ -1,12 +1,17 @@
 var express = require('express');
 var tarea = require('../../model/tarea.model');
+var services = require('../../services');
 var routerTarea = express.Router();
 
 //GET TAREAS
-routerTarea.get('/tareas/', function(req, res, next) {
-  tarea.selectAll(function(tarea) {
-    if(typeof tarea !== 'undefined') {
-      res.json(tarea);
+routerTarea.get('/tareas/', services.verificar,
+  function(req, res, next) {
+  var idUsuario = req.usuario.idUsuario;
+  console.log(idUsuario);
+  tarea.selectAll(idUsuario, function(tareas) {
+    if(typeof tareas !== 'undefined') {
+      console.log(tareas);
+      res.json(tareas);
     } else {
       res.json({"mensaje" : "No hay tareas"});
     }
@@ -15,23 +20,23 @@ routerTarea.get('/tareas/', function(req, res, next) {
 
 //GET TAREA
 routerTarea.get('/tareas/:idTarea',
-  function(req, res) {
-    var idTarea = req.params.idTarea;
-    tarea.select(idTarea,
-      function(error, resultados){
-      if(typeof resultados !== undefined) {
-        res.json(resultados);
-      } else {
-        res.json({"Mensaje": "No hay tareas"});
-      }
+ function(req, res, next) {
+  var idTarea = req.params.idTarea;
+  tarea.select(idTarea, function(resultado) {
+    if(typeof resultado !== 'undefined') {
+      console.log(resultado);
+      res.json(resultado);
+    } else {
+      res.json({"mensaje" : "No hay tareas"});
+    }
   });
 });
 
 //POST TAREAS
-routerTarea.post('/tareas', function(req, res) {
+routerTarea.post('/tareas', services.verificar, function(req, res) {
   var data = {
-    idTarea : null,
-    nombre : req.body.nombre,
+    idUsuario: req.usuario.idUsuario,
+    nombre: req.body.nombre,
     descripcion: req.body.descripcion,
     fechaEntrega: req.body.fechaEntrega
   }
@@ -45,31 +50,30 @@ routerTarea.post('/tareas', function(req, res) {
 });
 
 //PUT TAREAS
-routerTarea.put('/tareas/:idTarea', function(req, res) {
-  var idTarea = req.params.idTarea;
+routerTarea.put('/tareas/:idTarea', services.verificar, function(req, res) {
   var data = {
-    idTarea : req.body.idTarea,
-    nombre : req.body.nombre,
+    idUsuario: req.usuario.idUsuario,
+    idTarea: req.params.idTarea,
+    nombre: req.body.nombre,
     descripcion: req.body.descripcion,
     fechaEntrega: req.body.fechaEntrega
   }
-  if(idTarea === data.idTarea) {
-    tarea.update(data, function(err, resultado) {
+  tarea.update(data, function(err, resultado) {
       if(resultado !== undefined) {
         res.json(resultado);
       } else {
         res.json({"Mensaje": "No se modifico la tarea"});
       }
-    });
-  } else {
-    res.json({"Mensaje": "No concuerdan los datos"});
-  }
+  });
 });
 
 //DELETE TAREAS
-routerTarea.delete('/tareas/:idTarea',
+routerTarea.delete('/tareas/:idTarea', services.verificar,
   function(req, res) {
-    var idTarea = req.params.idTarea;
+    var data = {
+      idUsuario: req.usuario.idUsuario,
+      idTarea: req.params.idTarea
+    }
     tarea.delete(idTarea,
       function(error, resultado){
       if(resultado && resultado.Mensaje === "Eliminado") {

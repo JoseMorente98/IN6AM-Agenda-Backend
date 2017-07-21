@@ -50,9 +50,9 @@ contacto.insert = function(data, callback) {
 //ACTUALIZAR CONTACTO
 contacto.update = function(data, callback) {
   if(database) {
-    var sql = "CALL SP_ActualizarContacto(?, ?, ?, ?, ?, ?);";
+    var sql = "CALL SP_ActualizarContacto(?, ?, ?, ?, ?, ?, ?);";
     database.query(sql,
-    [data.nombre, data.apellido, data.telefono, data.correo, data.idCategoria, data.idContacto],
+    [data.idUsuario, data.nombre, data.apellido, data.telefono, data.correo, data.idCategoria, data.idContacto],
     function(error, resultado) {
       if(error) {
         throw error;
@@ -64,10 +64,10 @@ contacto.update = function(data, callback) {
 }
 
 //ELIMINAR CONTACTO
-contacto.delete = function(idContacto, callback) {
+contacto.delete = function(data, callback) {
   if(database) {
-    var sql = "CALL SP_EliminarContacto(?)";
-    database.query(sql, idContacto,
+    var sql = "CALL SP_EliminarContacto(?, ?)";
+    database.query(sql, [data.idUsuario, data.idContacto],
     function(error, resultado) {
       if(error) {
         throw error;

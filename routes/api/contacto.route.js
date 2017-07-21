@@ -2,7 +2,6 @@ var express = require('express');
 var contacto = require('../../model/contacto.model');
 var services = require('../../services');
 var routerContacto = express.Router();
-var historial = require('../../model/historial.model');
 
 //GET CONTACTOS
 routerContacto.get('/contactos/', services.verificar,
@@ -34,19 +33,16 @@ routerContacto.get('/contactos/:idContacto',
 });
 
 //POST CONTACTO
-routerContacto.post('/contactos', services.verificar, 
-function(req, res, next) {
-  var idUser = req.usuario.idUsuario;
-  console.log(idUser);
+routerContacto.post('/contactos', services.verificar,
+  function(req, res, next) {
   var data = {
-    idUsuario: idUser,
+    idUsuario: req.usuario.idUsuario,
     nombre : req.body.nombre,
     apellido : req.body.apellido,
     telefono : req.body.telefono,
     correo : req.body.correo,
     idCategoria : req.body.idCategoria
   };
-
   contacto.insert(data, function(resultado){
     if(resultado && resultado.affectedRows > 0) {
       res.redirect('/api/contactos/');
@@ -54,11 +50,13 @@ function(req, res, next) {
       res.json({"mensaje":"No se ingreso el contacto"});
     }
   });
+
 });
 
 //PUT CONTACTOS
-routerContacto.put('/contactos/:idContacto', function(req, res, next){
+routerContacto.put('/contactos/:idContacto', services.verificar, function(req, res, next){
   var data = {
+    idUsuario: req.usuario.idUsuario,
     nombre: req.body.nombre,
     apellido: req.body.apellido,
     telefono: req.body.telefono,
@@ -67,7 +65,7 @@ routerContacto.put('/contactos/:idContacto', function(req, res, next){
     idContacto: req.params.idContacto
   }
   contacto.update(data, function(resultado){
-    if(typeof resultado !== 'undefined') {
+    if(typeof resultado !== 'undefined') {     
       res.json(resultado);
     } else {
       res.json({"mensaje":"No se pudo actualizar"});
@@ -76,10 +74,13 @@ routerContacto.put('/contactos/:idContacto', function(req, res, next){
 });
 
 //DELETE CONTACTOS
-routerContacto.delete('/contactos/:idContacto', function(req, res, next){
-  var idContacto = req.params.idContacto;
-    contacto.delete(idContacto, function(resultado){
-      if(resultado && resultado.mensaje ===	"Eliminado") {
+routerContacto.delete('/contactos/:idContacto', services.verificar, function(req, res, next){
+  var data = {
+    idUsuario: req.usuario.idUsuario,
+    idContacto: req.params.idContacto
+  }
+  contacto.delete(data, function(resultado){
+    if(resultado && resultado.mensaje ===	"Eliminado") {
         res.json({"mensaje":"Se elimino el contacto correctamente"});
       } else {
         res.json({"mensaje":"Se elimino el contacto"});

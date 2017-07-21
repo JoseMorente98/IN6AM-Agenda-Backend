@@ -2,11 +2,17 @@ var database = require('../config/database.config');
 var usuario = {};
 
 //SELECCIONAR USUARIOS
-usuario.selectAll = function(callback) {
+usuario.selectAll = function(idUsuario, callback) {
   if(database) {
-    database.query('SELECT * FROM Usuario', function(error, resultados) {
-      if(error) throw error;
-      callback(resultados);
+    var sql = "SELECT * FROM Usuario WHERE idUsuario = ?";
+    database.query(sql, idUsuario,
+    function(error, resultado) {
+      if(error) {
+        throw error;
+      } else {
+        callback(resultado);
+        console.log(resultado);
+      }
     });
   }
 }

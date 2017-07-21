@@ -20,7 +20,7 @@ categoria.select = function(idCategoria, callback) {
       if(error) {
         throw error;
       } else {
-        callback(null, resultado);
+        callback(resultado);
       }
     });
   }
@@ -29,7 +29,7 @@ categoria.select = function(idCategoria, callback) {
 //AGREGAR CATEGORIA
 categoria.insert = function(data, callback) {
   if(database) {
-    database.query("CALL SP_AgregarCategoria(?);", data,
+    database.query("CALL SP_AgregarCategoria(?, ?);", [data.idUsuario, data.nombre],
     function(error, resultado) {
       if(error) {
         throw error;
@@ -43,9 +43,9 @@ categoria.insert = function(data, callback) {
 //ACTUALIZAR CATEGORIA
 categoria.update = function(data, callback) {
   if(database) {
-    var sql = "CALL SP_ActualizarCategoria(?, ?)";
+    var sql = "CALL SP_ActualizarCategoria(?, ?, ?);";
     database.query(sql,
-    [data.idCategoria, data.nombre],
+    [data.idUsuario, data.nombre, data.idCategoria],
     function(error, resultado) {
       if(error) {
         throw error;
@@ -57,10 +57,10 @@ categoria.update = function(data, callback) {
 }
 
 //ELIMINAR CATEGORIA
-categoria.delete = function(idCategoria, callback) {
+categoria.delete = function(data, callback) {
   if(database) {
-    var sql = "CALL SP_EliminarCategoria(?)";
-    database.query(sql, idCategoria,
+    var sql = "CALL SP_EliminarCategoria(?, ?);";
+    database.query(sql, [data.idUsuario, data.idCategoria],
     function(error, resultado) {
       if(error) {
         throw error;
