@@ -73,7 +73,7 @@ tarea.delete = function(data, callback) {
       if(error) {
         throw error;
       } else {
-        callback(null, {"Mensaje": "Eliminado"});
+        callback(null, resultado);
       }
     });
   }

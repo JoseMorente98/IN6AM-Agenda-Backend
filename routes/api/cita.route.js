@@ -62,7 +62,7 @@ routerCita.put('/citas/:idCita', services.verificar, function(req, res) {
     idContacto: req.body.idContacto
   }
   cita.update(data, function(err, resultado) {
-      if(resultado !== undefined) {
+      if(resultado !== 'undefined') {
         res.json({
         estado: true,
         mensaje: "Se edito la cita"
@@ -74,23 +74,22 @@ routerCita.put('/citas/:idCita', services.verificar, function(req, res) {
 });
 
 //DELETE CITAS
-routerCita.delete('/citas/:idCita', services.verificar,
-  function(req, res) {
-    var data = {
-      idUsuario: req.usuario.idUsuario,
-      idCita: req.params.idCita
-    }
-    cita.delete(idCita,
-      function(error, resultado){
-      if(resultado !== undefined) {
+
+routerCita.delete('/citas/:idCita', services.verificar, function(req, res, next){
+  var data = {
+    idUsuario: req.usuario.idUsuario,
+    idCita: req.params.idCita
+  }
+  cita.delete(data, function(resultado){
+    if(resultado !== undefined) {
         res.json({
         estado: true,
-        mensaje: "Se elimino la cita"
+        mensaje: "Se elimino la cita."
       });
       } else {
-        res.json({"Mensaje": "No se puede eliminar"});
+        res.json({"mensaje":"No se puede eliminar"});
       }
-  });
+    });
 });
 
 module.exports = routerCita;

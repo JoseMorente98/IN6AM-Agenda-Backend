@@ -74,23 +74,22 @@ routerTarea.put('/tareas/:idTarea', services.verificar, function(req, res) {
 });
 
 //DELETE TAREAS
-routerTarea.delete('/tareas/:idTarea', services.verificar,
-  function(req, res) {
-    var data = {
-      idUsuario: req.usuario.idUsuario,
-      idTarea: req.params.idTarea
-    }
-    tarea.delete(idTarea,
-      function(error, resultado){
-      if(resultado !== undefined) {
+routerTarea.delete('/tareas/:idTarea', services.verificar, function(req, res, next){
+  var data = {
+    idUsuario: req.usuario.idUsuario,
+    idTarea: req.params.idTarea
+  }
+  tarea.delete(data, function(resultado){
+    if(resultado !== undefined) {
         res.json({
         estado: true,
-        mensaje: "Se elimino la tarea"
+        mensaje: "Se elimino la tarea."
       });
       } else {
-        res.json({"Mensaje": "No se puede eliminar"});
+        res.json({"mensaje":"No se puede eliminar"});
       }
-  });
+    });
 });
+
 
 module.exports = routerTarea;

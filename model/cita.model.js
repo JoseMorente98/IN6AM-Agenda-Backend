@@ -27,7 +27,7 @@ cita.select = function(idCita, callback) {
       if(error) {
         throw error;
       } else {
-        callback(null, resultado);
+        callback(null, resultado[0]);
       }
     });
   }
@@ -73,7 +73,7 @@ cita.delete = function(data, callback) {
       if(error) {
         throw error;
       } else {
-        callback(null, {"Mensaje": "Eliminado"});
+        callback(null, resultado);
       }
     });
   }
