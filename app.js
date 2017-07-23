@@ -11,6 +11,7 @@ var categoriaRoute = require('./routes/api/categoria.route');
 var contactoRoute = require('./routes/api/contacto.route');
 var tareaRoute = require('./routes/api/tarea.route');
 var historialRoute = require('./routes/api/historial.route');
+var citasRoute = require('./routes/api/cita.route');
 var services = require('./services');
 
 var app = express();
@@ -48,6 +49,7 @@ app.use(uri, categoriaRoute);
 app.use(uri, contactoRoute);
 app.use(uri, tareaRoute);
 app.use(uri, historialRoute);
+app.use(uri, citasRoute);
 
 //ERROR 404
 app.use(function(req, res, next) {

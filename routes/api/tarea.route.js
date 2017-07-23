@@ -41,8 +41,11 @@ routerTarea.post('/tareas', services.verificar, function(req, res) {
     fechaEntrega: req.body.fechaEntrega
   }
   tarea.insert(data, function(err, resultado) {
-    if(resultado && resultado.insertId > 0) {
-      res.redirect('/api/tareas');
+    if(resultado !== undefined) {
+      res.json({
+        estado: true,
+        mensaje: "Se agrego la tarea"
+      });
     } else {
       res.json({"Mensaje": "No se ingreso la tarea"});
     }
@@ -60,7 +63,10 @@ routerTarea.put('/tareas/:idTarea', services.verificar, function(req, res) {
   }
   tarea.update(data, function(err, resultado) {
       if(resultado !== undefined) {
-        res.json(resultado);
+        res.json({
+          estado: true,
+          mensaje: "Se actualizo la tarea"
+        });
       } else {
         res.json({"Mensaje": "No se modifico la tarea"});
       }
@@ -76,8 +82,11 @@ routerTarea.delete('/tareas/:idTarea', services.verificar,
     }
     tarea.delete(idTarea,
       function(error, resultado){
-      if(resultado && resultado.Mensaje === "Eliminado") {
-        res.redirect("/api/tareas");
+      if(resultado !== undefined) {
+        res.json({
+        estado: true,
+        mensaje: "Se elimino la tarea"
+      });
       } else {
         res.json({"Mensaje": "No se puede eliminar"});
       }

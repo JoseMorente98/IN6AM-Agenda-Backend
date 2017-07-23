@@ -44,8 +44,11 @@ routerContacto.post('/contactos', services.verificar,
     idCategoria : req.body.idCategoria
   };
   contacto.insert(data, function(resultado){
-    if(resultado && resultado.affectedRows > 0) {
-      res.redirect('/api/contactos/');
+    if(resultado !== undefined) {
+      res.json({
+        estado: true,
+        mensaje: "Se agrego el contacto"
+      });
     } else {
       res.json({"mensaje":"No se ingreso el contacto"});
     }
@@ -66,7 +69,10 @@ routerContacto.put('/contactos/:idContacto', services.verificar, function(req, r
   }
   contacto.update(data, function(resultado){
     if(typeof resultado !== 'undefined') {     
-      res.json(resultado);
+      res.json({
+        estado: true,
+        mensaje: "Se actualizo el contacto"
+      });
     } else {
       res.json({"mensaje":"No se pudo actualizar"});
     }
@@ -80,10 +86,13 @@ routerContacto.delete('/contactos/:idContacto', services.verificar, function(req
     idContacto: req.params.idContacto
   }
   contacto.delete(data, function(resultado){
-    if(resultado && resultado.mensaje ===	"Eliminado") {
-        res.json({"mensaje":"Se elimino el contacto correctamente"});
+    if(resultado !== undefined) {
+        res.json({
+        estado: true,
+        mensaje: "Se elimino el contacto"
+      });
       } else {
-        res.json({"mensaje":"Se elimino el contacto"});
+        res.json({"mensaje":"No Se elimino el contacto"});
       }
     });
 });
