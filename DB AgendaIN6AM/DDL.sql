@@ -269,3 +269,6 @@ END;
 $$
 
 CALL SP_AgregarUsuario("admin", "admin");
+CALL SP_AgregarCategoria(1, 'Familia');
+CALL SP_AgregarCategoria(1, 'Amigos');
+CALL SP_AgregarCategoria(1, 'Universidad');
